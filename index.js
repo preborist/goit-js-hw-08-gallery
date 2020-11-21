@@ -11,7 +11,7 @@ const refs = {
 };
 
 const galleryItemsHtml = galleryItems.map(
-  ({ preview, original, description }) => {
+  ({ preview, original, description }, index) => {
     const item = document.createElement('li');
     const link = document.createElement('a');
     const image = document.createElement('img');
@@ -24,6 +24,7 @@ const galleryItemsHtml = galleryItems.map(
     image.setAttribute('src', preview);
     image.setAttribute('alt', description);
     image.setAttribute('data-source', original);
+    image.setAttribute('data-index', index);
 
     link.append(image);
     item.append(link);
@@ -32,6 +33,7 @@ const galleryItemsHtml = galleryItems.map(
   },
 );
 
+let activeIndex;
 refs.gallery.append(...galleryItemsHtml);
 
 refs.gallery.addEventListener('click', onGalleryClick);
@@ -39,6 +41,7 @@ refs.gallery.addEventListener('click', onGalleryClick);
 function onGalleryClick(event) {
   event.preventDefault();
   const imageRef = event.target;
+
   if (imageRef.nodeName !== 'IMG') {
     return;
   }
@@ -46,7 +49,9 @@ function onGalleryClick(event) {
   refs.lightbox.classList.add('is-open');
   refs.lightboxCloseBtn.addEventListener('click', onCloseBtnClick);
   refs.lightboxOverlay.addEventListener('click', onCloseBtnClick);
-  window.addEventListener('keydown', onPressEscape);
+  window.addEventListener('keydown', onKeyPress);
+
+  activeIndex = Number(imageRef.dataset.index);
 
   setLargeImgSrc(largeImageUrl);
 }
@@ -55,14 +60,28 @@ function setLargeImgSrc(url) {
   refs.lightboxImg.src = url;
 }
 
-function onPressEscape(event) {
-  if (event.code === 'Escape') {
-    onCloseBtnClick();
+function onKeyPress(event) {
+  switch (event.code) {
+    case 'Escape':
+      onCloseBtnClick();
+      break;
+    case 'ArrowRight':
+      activeIndex + 1 === galleryItems.length
+        ? (activeIndex = 0)
+        : (activeIndex += 1);
+      refs.lightboxImg.src = galleryItems[activeIndex].original;
+      break;
+    case 'ArrowLeft':
+      activeIndex === 0
+        ? (activeIndex = galleryItems.length - 1)
+        : (activeIndex -= 1);
+      refs.lightboxImg.src = galleryItems[activeIndex].original;
+      break;
   }
 }
 
 function onCloseBtnClick() {
-  window.removeEventListener('keydown', onPressEscape);
+  window.removeEventListener('keydown', onKeyPress);
   refs.lightbox.classList.remove('is-open');
   clearLargeImgSrc();
 }
