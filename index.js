@@ -7,6 +7,7 @@ const refs = {
   lightboxCloseBtn: document.querySelector(
     'button[data-action="close-lightbox"]',
   ),
+  lightboxOverlay: document.querySelector('div.lightbox__overlay'),
 };
 
 const galleryItemsHtml = galleryItems.map(
@@ -52,11 +53,15 @@ function setLargeImgSrc(url) {
 }
 
 refs.lightboxCloseBtn.addEventListener('click', onCloseBtnClick);
+refs.lightboxOverlay.addEventListener('click', onCloseBtnClick);
+window.addEventListener('keydown', event => {
+  if (event.code === 'Escape') {
+    onCloseBtnClick();
+  }
+});
 
-function onCloseBtnClick(event) {
-  console.log(event.target);
+function onCloseBtnClick() {
   refs.lightbox.classList.remove('is-open');
-
   clearLargeImgSrc();
 }
 
