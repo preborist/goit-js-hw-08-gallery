@@ -44,6 +44,9 @@ function onGalleryClick(event) {
   }
   const largeImageUrl = imageRef.dataset.source;
   refs.lightbox.classList.add('is-open');
+  refs.lightboxCloseBtn.addEventListener('click', onCloseBtnClick);
+  refs.lightboxOverlay.addEventListener('click', onCloseBtnClick);
+  window.addEventListener('keydown', onPressEscape);
 
   setLargeImgSrc(largeImageUrl);
 }
@@ -52,15 +55,14 @@ function setLargeImgSrc(url) {
   refs.lightboxImg.src = url;
 }
 
-refs.lightboxCloseBtn.addEventListener('click', onCloseBtnClick);
-refs.lightboxOverlay.addEventListener('click', onCloseBtnClick);
-window.addEventListener('keydown', event => {
+function onPressEscape(event) {
   if (event.code === 'Escape') {
     onCloseBtnClick();
   }
-});
+}
 
 function onCloseBtnClick() {
+  window.removeEventListener('keydown', onPressEscape);
   refs.lightbox.classList.remove('is-open');
   clearLargeImgSrc();
 }
