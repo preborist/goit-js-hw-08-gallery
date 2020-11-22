@@ -8,6 +8,7 @@ const refs = {
     'button[data-action="close-lightbox"]',
   ),
   lightboxOverlay: document.querySelector('div.lightbox__overlay'),
+  lightboxClickControl: document.querySelector('div.lightbox__content'),
 };
 
 const galleryItemsHtml = galleryItems.map(
@@ -49,6 +50,7 @@ function onGalleryClick(event) {
   refs.lightbox.classList.add('is-open');
   refs.lightboxCloseBtn.addEventListener('click', onCloseBtnClick);
   refs.lightboxOverlay.addEventListener('click', onCloseBtnClick);
+  refs.lightboxClickControl.addEventListener('click', onControlBtnClick);
   window.addEventListener('keydown', onKeyPress);
 
   activeIndex = Number(imageRef.dataset.index);
@@ -66,16 +68,10 @@ function onKeyPress(event) {
       onCloseBtnClick();
       break;
     case 'ArrowRight':
-      activeIndex + 1 === galleryItems.length
-        ? (activeIndex = 0)
-        : (activeIndex += 1);
-      refs.lightboxImg.src = galleryItems[activeIndex].original;
+      rightMove();
       break;
     case 'ArrowLeft':
-      activeIndex === 0
-        ? (activeIndex = galleryItems.length - 1)
-        : (activeIndex -= 1);
-      refs.lightboxImg.src = galleryItems[activeIndex].original;
+      leftMove();
       break;
   }
 }
@@ -83,9 +79,42 @@ function onKeyPress(event) {
 function onCloseBtnClick() {
   window.removeEventListener('keydown', onKeyPress);
   refs.lightbox.classList.remove('is-open');
+  refs.lightboxClickControl.removeEventListener('click', onControlBtnClick);
   clearLargeImgSrc();
 }
 
 function clearLargeImgSrc() {
   refs.lightboxImg.src = '';
+}
+
+function onControlBtnClick(event) {
+  if (event.target.nodeName !== 'BUTTON') {
+    return;
+  }
+  switch (event.target.classList.value) {
+    case 'lightbox__mousecontrol left':
+      leftMove();
+      break;
+    case 'lightbox__mousecontrol right':
+      rightMove();
+      break;
+  }
+}
+
+function leftMove() {
+  if (activeIndex === 0) {
+    activeIndex = galleryItems.length - 1;
+  } else {
+    activeIndex -= 1;
+  }
+  refs.lightboxImg.src = galleryItems[activeIndex].original;
+}
+
+function rightMove() {
+  if (activeIndex + 1 === galleryItems.length) {
+    activeIndex = 0;
+  } else {
+    activeIndex += 1;
+  }
+  refs.lightboxImg.src = galleryItems[activeIndex].original;
 }

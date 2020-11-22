@@ -104,6 +104,7 @@ body {
 
 .lightbox__image {
   display: block;
+  position: relative;
   width: auto;
   height: auto;
   max-height: 100vh;
@@ -132,6 +133,23 @@ body {
   background-position: center;
   background-size: 60%;
   background-repeat: no-repeat;
+}
+
+.lightbox__mousecontrol {
+  display: block;
+  position: absolute;
+  top: 0;
+  color: white;
+  height: 100%;
+  width: 55px;
+  background-color: transparent;
+}
+
+.lightbox__mousecontrol.left {
+  left: 0;
+}
+.lightbox__mousecontrol.right {
+  right: 0;
 }
 
 .lightbox__button:hover,
